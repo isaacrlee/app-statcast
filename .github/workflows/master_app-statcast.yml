@@ -23,7 +23,6 @@ jobs:
       - name: Build using AppService-Build
         uses: azure/appservice-build@v1
         with:
-          source-directory: app-statcast
           platform: python
 
       - name: "Deploy to Azure Web App"
