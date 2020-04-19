@@ -23,8 +23,8 @@ jobs:
       - name: Build using AppService-Build
         uses: azure/appservice-build@v2-beta
         with:
-          source-directory: .
           platform: python
+          platform-version: "3.8"
 
       - name: "Deploy to Azure Web App"
         uses: azure/webapps-deploy@v2
