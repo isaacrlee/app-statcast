@@ -6,6 +6,8 @@ authors = ["Isaac Lee <iasacrlee@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+fastapi = "^0.54.1"
+uvicorn = "^0.11.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
