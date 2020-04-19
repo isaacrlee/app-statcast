@@ -23,6 +23,7 @@ jobs:
       - name: Build using AppService-Build
         uses: azure/appservice-build@v2-beta
         with:
+          source-directory: .
           platform: python
 
       - name: "Deploy to Azure Web App"
