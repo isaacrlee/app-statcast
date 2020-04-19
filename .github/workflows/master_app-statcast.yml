@@ -21,12 +21,12 @@ jobs:
           python-version: "3.8"
 
       - name: Build using AppService-Build
-        uses: azure/appservice-build@v1
+        uses: azure/appservice-build@v2
         with:
           platform: python
 
       - name: "Deploy to Azure Web App"
-        uses: azure/webapps-deploy@v1
+        uses: azure/webapps-deploy@v2
         with:
           app-name: "app-statcast"
           slot-name: "production"
