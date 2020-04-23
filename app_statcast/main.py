@@ -21,8 +21,8 @@ def read_item(item_id: int, q: str = None):
     return {"item_id": item_id, "q": q}
 
 
-@app.get("/batter")
-def read_batter():
+@app.get("/pitches/{pitch_id}")
+def read_pitch(pitch_id: int):
     query = f"""
         SELECT
             p.id,
@@ -37,8 +37,7 @@ def read_batter():
             p.type
         FROM RawPitches as p
         WHERE
-            p.game_type = 'R' AND p.batter = 545361 AND IS_NULL(p.pitch_type) = false AND p.pitch_type != "FO" AND IS_NULL(p.type) = false
-        ORDER BY p.id
+            p.id = {pitch_id}
         """
 
     items = list(
