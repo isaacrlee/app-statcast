@@ -1,8 +1,8 @@
+from app_statcast import __version__
+from app_statcast.main import app
 from fastapi.testclient import TestClient
 import pandas as pd
 
-from app_statcast import __version__
-from app_statcast.main import app
 
 client = TestClient(app)
 
@@ -19,3 +19,21 @@ def test_read_pitch():
     assert len(df.index) > 0
     assert "swing" in df.columns and "miss" in df.columns
     assert response.status_code == 200
+
+
+def test_read_pitches():
+    response = client.get("/pitches/?batter=545361&pitcher=543037")
+
+    df = pd.read_json(response.json())
+
+    print(df)
+
+    assert len(df.index) > 0
+    assert "swing" in df.columns and "miss" in df.columns
+    assert response.status_code == 200
+
+
+def test_read_pitches_400():
+    response = client.get("/pitches/")
+
+    assert response.status_code == 400
