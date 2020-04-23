@@ -48,7 +48,7 @@ def read_pitch(pitch_id: str):
         )
     )
 
-    return pitches_json(items)
+    return pitches_json(pitches)
 
 
 @app.get("/pitches/")
@@ -96,7 +96,7 @@ def read_pitches(
         )
     )
 
-    return pitches_json(items)
+    return pitches_json(pitches)
 
 
 def pitches_json(pitches):
