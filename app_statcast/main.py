@@ -1,5 +1,6 @@
 import azure.cosmos.cosmos_client as cosmos_client
 from fastapi import FastAPI
+import pandas as pd
 import os
 
 
@@ -22,7 +23,7 @@ def read_item(item_id: int, q: str = None):
 
 
 @app.get("/pitches/{pitch_id}")
-def read_pitch(pitch_id: int):
+def read_pitch(pitch_id: str):
     query = f"""
         SELECT
             p.id,
@@ -37,7 +38,7 @@ def read_pitch(pitch_id: int):
             p.type
         FROM RawPitches as p
         WHERE
-            p.id = {pitch_id}
+            p.id = '{pitch_id}'
         """
 
     items = list(
@@ -46,4 +47,19 @@ def read_pitch(pitch_id: int):
         )
     )
 
-    return items
+    df = pd.DataFrame(items)
+
+    df.loc[df.pitch_type == "SI", "pitch_type"] = "FT"
+    df.loc[df.pitch_type == "KC", "pitch_type"] = "CU"
+    df.loc[df.pitch_type == "FS", "pitch_type"] = "CH"
+
+    df["swing"] = df.apply(
+        lambda row: int(row.type in ["D", "E", "F", "L", "M", "O", "S", "T", "W", "X"]),
+        axis=1,
+    ).astype(bool)
+
+    df["miss"] = df.apply(
+        lambda row: int(row.type in ["O", "S", "T", "W"]), axis=1
+    ).astype(bool)
+
+    return df.to_json(orient="records")
