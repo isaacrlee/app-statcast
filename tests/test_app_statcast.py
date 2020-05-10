@@ -12,7 +12,7 @@ def test_version():
 
 
 def test_read_pitch():
-    response = client.get("/pitches/191031_034516")
+    response = client.get("/pitchbypitch/191031_034516")
 
     df = pd.read_json(response.json())
 
@@ -22,11 +22,9 @@ def test_read_pitch():
 
 
 def test_read_pitches():
-    response = client.get("/pitches/?batter=545361&pitcher=543037")
+    response = client.get("/pitchbypitch/?batter=545361&pitcher=543037")
 
     df = pd.read_json(response.json())
-
-    print(df)
 
     assert len(df.index) > 0
     assert "swing" in df.columns and "miss" in df.columns
@@ -34,6 +32,6 @@ def test_read_pitches():
 
 
 def test_read_pitches_400():
-    response = client.get("/pitches/")
+    response = client.get("/pitchbypitch/")
 
     assert response.status_code == 400

@@ -1,16 +1,14 @@
-import azure.cosmos.cosmos_client as cosmos_client
 from fastapi import FastAPI, Query, Response, status
 import pandas as pd
+import pymysql
 import os
+from sqlalchemy import create_engine
 from typing import List
 
 
 app = FastAPI()
 
-client = cosmos_client.CosmosClient(
-    os.environ["COSMOS_URI"], {"masterKey": os.environ["COSMOS_KEY"]},
-)
-container = client.ReadContainer("dbs/Statcast/colls/RawPitches")
+engine = create_engine(os.environ["MYSQL_STATCAST"], pool_pre_ping=True,)
 
 
 @app.get("/")
@@ -23,11 +21,11 @@ def read_item(item_id: int, q: str = None):
     return {"item_id": item_id, "q": q}
 
 
-@app.get("/pitches/{pitch_id}")
+@app.get("/pitchbypitch/{pitch_id}")
 def read_pitch(pitch_id: str):
     query = f"""
         SELECT
-            p.id,
+            p.sv_id,
             p.pitch_type,
             p.game_date,
             p.batter,
@@ -37,21 +35,18 @@ def read_pitch(pitch_id: str):
             p.plate_x,
             p.plate_z,
             p.type
-        FROM RawPitches as p
+        FROM pitchbypitch as p
         WHERE
-            p.id = '{pitch_id}' AND IS_NULL(p.pitch_type) = false AND p.pitch_type != "FO" AND IS_NULL(p.type) = false
+            ISNULL(p.pitch_type) = false AND
+            p.pitch_type != "FO" AND
+            ISNULL(p.type) = false AND
+            p.sv_id = '{pitch_id}'
         """
 
-    pitches = list(
-        client.QueryItems(
-            "dbs/Statcast/colls/RawPitches", query, {"enableCrossPartitionQuery": True},
-        )
-    )
-
-    return pitches_json(pitches)
+    return pitches_json(pd.read_sql(query, engine))
 
 
-@app.get("/pitches/")
+@app.get("/pitchbypitch/")
 def read_pitches(
     response: Response,
     game_year: int = Query([2019]),
@@ -65,7 +60,7 @@ def read_pitches(
 
     query = f"""
         SELECT
-            p.id,
+            p.sv_id,
             p.pitch_type,
             p.game_date,
             p.batter,
@@ -75,11 +70,11 @@ def read_pitches(
             p.plate_x,
             p.plate_z,
             p.type
-        FROM RawPitches as p
+        FROM pitchbypitch as p
         WHERE
-            IS_NULL(p.pitch_type) = false AND
+            ISNULL(p.pitch_type) = false AND
             p.pitch_type != "FO" AND
-            IS_NULL(p.type) = false AND
+            ISNULL(p.type) = false AND
             p.game_year IN ({','.join(map(str, game_year))}) AND
             p.game_type IN ({','.join([f"'{g}'" for g in game_type])})
         """
@@ -90,18 +85,10 @@ def read_pitches(
     if pitcher:
         query += f"AND p.pitcher IN ({','.join(map(str, pitcher))})"
 
-    pitches = list(
-        client.QueryItems(
-            "dbs/Statcast/colls/RawPitches", query, {"enableCrossPartitionQuery": True},
-        )
-    )
-
-    return pitches_json(pitches)
+    return pitches_json(pd.read_sql(query, engine))
 
 
-def pitches_json(pitches):
-    df = pd.DataFrame(pitches)
-
+def pitches_json(df):
     df.loc[df.pitch_type == "SI", "pitch_type"] = "FT"
     df.loc[df.pitch_type == "KC", "pitch_type"] = "CU"
     df.loc[df.pitch_type == "FS", "pitch_type"] = "CH"
