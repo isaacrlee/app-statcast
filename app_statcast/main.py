@@ -8,7 +8,7 @@ from typing import List
 
 app = FastAPI()
 
-engine = create_engine(os.environ["MYSQL_STATCAST"], pool_pre_ping=True,)
+engine = create_engine(os.environ["MYSQL_STATCAST"], pool_pre_ping=True)
 
 
 @app.get("/")

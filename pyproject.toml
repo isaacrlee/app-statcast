@@ -2,7 +2,7 @@
 name = "app-statcast"
 version = "0.1.0"
 description = ""
-authors = ["Isaac Lee <iasacrlee@gmail.com>"]
+authors = ["Isaac Lee <isaacrlee@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
