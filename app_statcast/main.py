@@ -16,16 +16,11 @@ def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
-
-
 @app.get("/pitchbypitch/{pitch_id}")
 def read_pitch(pitch_id: str):
     query = f"""
         SELECT
-            p.sv_id,
+            p.id,
             p.pitch_type,
             p.game_date,
             p.batter,
@@ -40,7 +35,7 @@ def read_pitch(pitch_id: str):
             ISNULL(p.pitch_type) = false AND
             p.pitch_type != "FO" AND
             ISNULL(p.type) = false AND
-            p.sv_id = '{pitch_id}'
+            p.id = '{pitch_id}'
         """
 
     return pitches_json(pd.read_sql(query, engine))
@@ -80,10 +75,10 @@ def read_pitches(
         """
 
     if batter:
-        query += f"AND p.batter IN ({','.join(map(str, batter))})"
+        query += f" AND p.batter IN ({','.join(map(str, batter))})"
 
     if pitcher:
-        query += f"AND p.pitcher IN ({','.join(map(str, pitcher))})"
+        query += f" AND p.pitcher IN ({','.join(map(str, pitcher))})"
 
     return pitches_json(pd.read_sql(query, engine))
 
