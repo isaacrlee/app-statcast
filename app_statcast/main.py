@@ -1,9 +1,10 @@
+import os
+from typing import List
+
 from fastapi import FastAPI, Query, Response, status
 import pandas as pd
 import pymysql
-import os
 from sqlalchemy import create_engine
-from typing import List
 
 
 app = FastAPI()
