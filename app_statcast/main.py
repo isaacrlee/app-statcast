@@ -30,7 +30,7 @@ def read_pitch(pitch_id: str):
             p.p_throws,
             p.plate_x,
             p.plate_z,
-            p.type
+            p.description
         FROM pitchbypitch as p
         WHERE
             ISNULL(p.pitch_type) = false AND
@@ -65,7 +65,7 @@ def read_pitches(
             p.p_throws,
             p.plate_x,
             p.plate_z,
-            p.type
+            p.description
         FROM pitchbypitch as p
         WHERE
             ISNULL(p.pitch_type) = false AND
@@ -90,12 +90,35 @@ def pitches_json(df):
     df.loc[df.pitch_type == "FS", "pitch_type"] = "CH"
 
     df["swing"] = df.apply(
-        lambda row: int(row.type in ["D", "E", "F", "L", "M", "O", "S", "T", "W", "X"]),
+        lambda row: int(
+            row.description
+            in [
+                "foul",
+                "foul_pitchout",
+                "foul_tip",
+                "hit_into_play",
+                "hit_into_play_no_out",
+                "hit_into_play_score",
+                "pitchout_hit_into_play_score",
+                "swinging_pitchout",
+                "swinging_strike",
+                "swinging_strike_blocked",
+            ]
+        ),
         axis=1,
     ).astype(bool)
 
     df["miss"] = df.apply(
-        lambda row: int(row.type in ["O", "S", "T", "W"]), axis=1
+        lambda row: int(
+            row.description
+            in [
+                "foul_tip",
+                "swinging_pitchout",
+                "swinging_strike",
+                "swinging_strike_blocked",
+            ]
+        ),
+        axis=1,
     ).astype(bool)
 
     return df.to_json(orient="records")
