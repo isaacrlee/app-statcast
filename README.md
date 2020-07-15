@@ -10,6 +10,11 @@ $ poetry install
 $ uvicorn app_statcast.main:app --reload
 ```
 
+## Run Tests
+```
+$ pytest --cov
+```
+
 ## Update requirements.txt
 ```
 $ poetry export -f requirements.txt > requirements.txt
