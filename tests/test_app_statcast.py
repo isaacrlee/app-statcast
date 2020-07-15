@@ -1,8 +1,8 @@
-from app_statcast import __version__
-from app_statcast.main import app
 from fastapi.testclient import TestClient
 import pandas as pd
 
+from app_statcast import __version__
+from app_statcast.main import app
 
 client = TestClient(app)
 
