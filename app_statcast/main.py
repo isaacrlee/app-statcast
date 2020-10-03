@@ -45,7 +45,7 @@ def read_pitch(pitch_id: str):
 @app.get("/pitchbypitch/")
 def read_pitches(
     response: Response,
-    game_year: int = Query([2019]),  # noqa: B008
+    game_year: int = Query([2020]),  # noqa: B008
     game_type: str = Query(["R"]),  # noqa: B008
     batter: List[int] = Query(None),  # noqa: B008
     pitcher: List[int] = Query(None),  # noqa: B008
