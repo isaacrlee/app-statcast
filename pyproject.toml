@@ -6,7 +6,7 @@ authors = ["Isaac Lee <isaacrlee@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-fastapi = "^0.54.1"
+fastapi = "^0.65.2"
 pandas = "^1.0.3"
 pymysql = "^0.9.3"
 requests = "^2.23.0"
